@@ -7,9 +7,9 @@ Working as a server, I face the problem of not knowing how much I will make in a
 There are 2 key metrics that determines my earnings:
 
   - Sales volume
-  - Tip Percentage
+  - Tip percentage
 
-Both are random in that we cannot predict how many tables I will serve in a given shift and that there is no consistent value for tip percentage.
+Both are random in that we cannot predict how many tables I will serve on a given shift and that there is no constant value for tip percentage.
 
 To measure the variability in my earnings and to extract new business insights, I collected 9-months worth of data from my daily cash outs. The main goal for this analysis is to forecast expected earnings and maximize potential earnings.
 
@@ -38,13 +38,13 @@ By appending our 3 datasets we can assess the overall correlation between Sales 
 
 ![Correlation](./img/corr.png)
 
-We can further visualize the correlation between Sales and Tips through a linear regression. Using StatsModels and Seaborn we get the following:
+We can further visualize the correlation between Sales and Tips through regression analysis. Using StatsModels and Seaborn we get the following:
 
 ![Linear Regression](./img/linear_regression.png)
 
 From the figure above we can see that outliers are present and that there is variability in the data. The outliers and variance of our model is caused by the randomness in tip percentages. Although on average the tip percentage ranges between 10% to 18%, there are times when tip percentages are less than 10% or higher than 18%. The variance can be measured through our R-squared value, which is at 0.894.
 
-Next we want to consolidate our datasets and start analyzing the data. First we need to add 2 new columns to our datasets. The categorical column 'Shift', which tells us whether it was a Lunch shift or Dinner shift, and the 'Net' Tips received. There are tip outs to the kitchen and bartenders at the end of every shift and this works out to 6% of my total sales. To account for the tip out, I subtract 6% of my total sales from Sales and account for any cash payments I received. Generally people who pay in cash will tip in cash. By taking the Amount of Sales in Cash, I can estimate how much I am earning from cash tips (randomly generating a tip percentage between 10% to 18%). The Python code for this process can be seen below:
+Next we want to consolidate our datasets and start analyzing the data. First we need to add 2 new columns to our datasets. The categorical column 'Shift', which tells us whether it was a Lunch shift or Dinner shift, and the 'Net' Tips received. There are tip outs to the kitchen and bartenders at the end of every shift and this works out to 6% of my total sales. To account for the tip out, I subtract 6% of my total sales and account for any cash payments I received. Generally people who pay in cash will tip in cash. By taking the Amount of Sales in Cash, I can estimate how much I am earning from cash tips (randomly generating a tip percentage between 10% to 18%). The Python code for this process can be seen below:
 
 ```Python
 ## Accounting for Tip Out and getting the actual Amount of Tips
@@ -106,15 +106,15 @@ df['Yield'] = df.Net / df.Sales
 
 We will be using Seaborn, which is an extension of Matplotlib, for all our visualizations.
 
-First we will look at the Central Limit Theorem, as illustrated in the figure below. We can see a central tendency around the median and a normal distribution of the data. Using quartiles, we can get a range of what the expected sales can be. We can also conclude that there is a greater dispersion of data during the Night shifts as opposed to the Day shifts. Although the Day shifts are more predictable in what you will earn, there is a higher potential of earnings in the Night shifts with higher variability.
+First we will look at the Central Limit Theorem, as illustrated in the figure below. We can see a central tendency around the median and a normal distribution of the data. Using quartiles, we can get a range of what the expected sales can be. We can also see that there is greater dispersion of data in the Night than the Day, meaning that Day shifts are more predictable while Night shifts have higher variability with higher potential of earnings.
 
 ![Distribution Plot](./img/distribution_plot.png)
 
-We also look at the frequency of the Days worked, which the visualization is illustrated in the figure below. It should be noted that I have not been scheduled to work a Saturday Day shift, as we can see in the figure. We will account for this missing value later.
+We also look at the frequency of the Days worked in the illustration below.
 
 ![Frequency Plot](./img/frequency_plot.png)
 
-Next we will illustrate our expected Sales based on a day of the week and the shift type. First we will take care of our missing value for our Saturday Day shift, which I have never been scheduled to work. Based on our dataset, it makes the most sense that a Saturday Day shift will closely resemble a Weekend Day shift over a Weekday Day shift. For that reason, the Saturday Day shift equals the Sunday Day shift.
+Next we will illustrate our expected Sales based on a day of the week and the shift type. First we will take care of our missing value for our Saturday Day shift, which I have never been scheduled to work. It is fair to assume that a Saturday Day shift will more likely resemble a Sunday Day shift as opposed a Weekday Day shift. For that reason, the Saturday Day shift equals the Sunday Day shift.
 
 Based on the expected Sales illustrated in the figure below, we can draw a few conclusions:
 
@@ -132,11 +132,21 @@ Looking at the Net Earnings from Tips as illustrated in the figure below, we can
 
 ![Average Net](./img/average_net.png)
 
-Based on the Average Sales and Average Net Earnings from Tips, we can draw the following data of the average Yield, or tip percentage on a given day:
+Based on the Average Sales and Average Net Earnings from Tips, we can draw the following data of the average Yield, or the net tip percentage on a given day:
 
 ![Average Yield](./img/average_yield.png)
 
 We can see from the figure above that the average Yield is around 9% to 10%, meaning that the average tip percentage normalize around 15%. From the figure above we can also draw new conclusions:
 
-  - Sunday Night has low yield, high sales volume and low tip percentage, signifying low productivity
-  - The most optimal shifts to work are Monday Day shifts and Thursday Night shifts. High volume, high tip percentage.
+  - Sunday Night has low yield, high sales volume and low tip percentage, signifying low efficiency.
+  - The most optimal shifts to work are Monday Day, Thursday Night, Saturday Day/Night, and Sunday Day. High volume, high tip percentage.
+
+## Conclusion
+
+With data we can formulate trends in generating business insight. Using the central limit theorem, we can predict expected earnings and maximize potential earnings in the future. From the analysis we can make the following conclusions:
+
+  - Day shifts are more predictable but Night shifts have higher sales volumes
+  - On average, people are tipping 15%
+  - Friday Night and Sunday Night shifts yield the lowest tip percentage with relatively high sales volume, low efficiency
+  - Most money can be made working Thursday and Saturday nights
+  - Most money can be made working Monday, Tuesday, Saturday, and Sunday lunches
